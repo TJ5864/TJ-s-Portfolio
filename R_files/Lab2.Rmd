@@ -1,0 +1,177 @@
+---
+title: "Lab 2"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+library(countrycode)
+library(dplyr)
+# Below we are going to subset the life expectancy data so we only see the contries and the years 1923 and 2010. 
+life_exp <- read.csv("lex.csv")
+#glimpse(life_exp)
+data <- life_exp[c("country", "X1923", "X2023")]
+#glimpse(data)
+data$continent <- countrycode(sourcevar = data[, "country"],
+origin = "country.name",
+destination = "continent")
+
+data <- na.omit(data)
+
+glimpse(data)
+```
+
+
+```{r}
+library(ggplot2)
+ggplot(data = data, aes(x=X1923))+geom_histogram(fill="blue",color="black")+labs(x="Life Expectancy during 1923", y="Count")
+
+```
+The Histogram of life expectanyc during 1923 is skewed to the right meaning the life expectancy is lower, and people lived bewteen 30 and 40 years.
+The histogram also has a some isolated cases of older life expectancy. At the time during 1923 there were better living conditions in some countries then others. Also with the development of medinces and more inventions in the western world its safe to assume these countries with the higher life expectancy are in Europe.
+
+```{r}
+ggplot(data = data, aes(x=X2023))+geom_histogram(fill="red",color="black")+labs(x="Life Expectancy during 2023", y="Count")
+```
+
+
+The histogram of the life expectancy during 2023 on the other hand is skewed to the left showing that in 2023, people lived longer lives wiht majority of the data being around 77 and 80. Where as in 1923 it was closer to 30-40. 
+
+```{r}
+ggplot(data, aes(x=X1923, y=X2023))+geom_point()+labs(x="Life Expectancy in 1923", y= "Life Expectancy in 2023")
+
+```
+
+The points show a positive correlation as they tend to stay higher and increase. Countries that had a higher life expectancy in 1923 also had a higher life expectancy in 2023 shown by the upword trend of the dots otherwise known as a postie correlation. There is also a linear relationship shown as the points represent a line. 
+
+```{r}
+#simple linear regression 
+#install.packages("moderndive")
+library(moderndive)
+model1 <- lm(data = data, X1923~X2023)
+get_regression_table(model1)
+#print(model1)
+```
+The relationship between 1923 and 2023 is somewhat significant. The R squared values is 15.26% so there is definatly some relationshoip between the two. The P value though is also greater than 0.05 so we also can not reject the null hypothesis so there may be no relationship too. 
+
+5.  If the life expectancy of 1923 were to increase by one year would lead to a 0.4 increase in 2023 as shown by the estamate value of 2023 becuase it is 0.4 greater than 1923. Further 1/0.4 =. about 2.5 so for every 1 year increase in 1923, we see a 2.5 year increase for the life expectancy in 2023.
+
+6. based on the model and the equation of lienar regresion , we use the formula 34.3-8.4 = 25.8 then we divide this by 0.4 to get 64.5 years would be the individuals life expectancy in 2023
+
+```{r}
+library(ggplot2) 
+model1 <- lm(data = data, X1923~X2023)
+points <-  get_regression_points(model1)
+ggplot(data = points, aes(x =X2023 , y = residual))+ geom_point()+geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  labs(title = "Residual Plot", x = "Life Expectancy in 1923", y = "Residuals")
+```
+```{r}
+ggplot(data = points, aes(x=residual))+geom_histogram(color='pink') +
+  labs(title = "Histogram of Residuals", x = "Residuals", y = "Frequency")
+```
+
+
+7. The values seem to be clustering around 75 but the data seems random to me becuase there is no explicit trend or pattern that can be seen. In the histogram the residuals are slighly skewed to the right but there is no other trend that is apparent to us from these 2 plots. So I'd assume the data is somewhat random. 
+
+```{r}
+get_regression_summaries(model1)
+```
+8. Our R^2 value is 0.153 so 15% of the time the variation can be described by the life expectancy in 2023. So it is somewhat relevant or 15% relevant. 
+
+
+```{r}
+library(dplyr)
+counts <- data %>%
+  group_by(continent) %>%
+  summarise(counts = n_distinct(country))
+print(counts)
+
+```
+```{r}
+#Box plots by contnenet 
+ggplot(data, aes(x=continent, y = X1923))+ geom_boxplot()+ labs(x= " Continents ", y = "Life Expectancy in 1923")
+```
+```{r}
+# histogram 
+ggplot(data, aes(x = X1923, fill = continent)) +
+  geom_histogram( position = "stack", color="black") +
+  labs(title = "Distribution of Life Expectancy in 1923 by Continent", 
+       x = "Life Expectancy in 1923", 
+       y = "Frequency") +
+  theme_minimal()
+```
+This histogram is skewwed to the right.But there are some outliers which are mostly European Countries that had higher life expectancy in 1923.
+
+```{r}
+summary_table <- data %>%
+  group_by(continent) %>%
+  summarise(
+    mean_life_exp = mean(X1923, na.rm = TRUE),
+    median_life_exp = median(X1923, na.rm = TRUE)
+  )
+
+# Print the summary table
+print(summary_table)
+```
+```{r}
+model2 <- lm(data=data, X1923~continent)
+get_regression_table(model2)
+
+```
+Based on the regresion table the estimate life expectanyc Africa is calcuated to have an average life expectancy of 35,  America is 35, Asia is 33 Europe is 47 and Oceania is 35. These are all very close to the values calculated above. These estimates from the regresion model are correctly calcualted and match the means. To check the significance of these levels we need to look at the P-value next. If we set our reference P-value to 0.05 the only stastically significant continent is Europe. We can not reject the null hypothesis for the rest of the continents becuase there P-vakue is to high so they are insignificant. 
+
+```{r}
+data$continent <- factor(data$continent)
+new_model <- lm(data=data, X1923~relevel(continent, ref = "Europe"))
+get_regression_table(new_model)
+
+```
+As shown the reference level effects the p value, so when we use Eruope as our reference all continents are statstically significant becuase they are different from the intercept which is Europe. 
+
+```{r}
+ggplot(data, aes(x=continent, y = X2023))+ geom_boxplot()+ labs(x= " Continents ", y = "Life Expectancy in 2023")
+```
+Less spread on these box plots then in 1923. The data is more focused around the mean except for a few outliers. 
+
+```{r}
+ggplot(data, aes(x = X2023, fill = continent)) +
+  geom_histogram( position = "stack", color="black") +
+  labs(title = "Distribution of Life Expectancy in 2023 by Continent", 
+       x = "Life Expectancy in 2023", 
+       y = "Frequency") +
+  theme_minimal()
+```
+This Plot is skewed to the left, most of the data points and life expectancies are for higher values unlike 1923 in which the data was skewed to the right. 
+
+```{r}
+summary_table <- data %>%
+  group_by(continent) %>%
+  summarise(
+    mean_life_exp = mean(X2023, na.rm = TRUE),
+    median_life_exp = median(X2023, na.rm = TRUE)
+  )
+
+# Print the summary table
+print(summary_table)
+```
+```{r}
+model3 <- lm(data=data, X2023~continent)
+get_regression_table(model3)
+```
+Based on regreison model the average life expectanyc in Africa is 66 years, America it is 76 years, Asia it is 73 years, Europe it is 79 years, and in Ociainia it is 69 years. Again these values match up to the means of the life expectancy for each country showing the model is accurate. In terms of signifcance all the values are singificant except Ociania. For Ociania the P-value is to hgih and we fail to reject the null hypothesis. 
+```{r}
+# new reference 
+new_model2 <- lm(data=data, X2023~relevel(continent, ref = "Europe"))
+get_regression_table(new_model2)
+
+```
+When we switch the reference point again we get new p- values. These new p valeus are all significant except for the Americas. Our value we comapre is 0.05 and 0.059 is just barely bigger so we fail to reject the null hypothesis fro the Americas. Therefore making it not statistically significant. 
+
+Last Question : 
+
+As shown by the histograms by continent, in 1923, the data was right-skewed, meaning most countries had lower life expectancies, but a few had much higher values. The spread was large, indicating a significant variation in life expectancy between countries. By 2023, the histogram is left-skewed, with most values clustered around 75 years of age. This shift indicates that global life expectancy has risen by approximately 30–35 years, with fewer countries having extremely low life expectancy. The boxplots further confirm this trend. In 1923, most continents had median life expectancies between 30 and 40 years, with Europe being the exception, having a significantly higher average and a much larger spread. In 2023, life expectancy averages across continents became more similar, clustering around 60–70 years, and the spread of data decreased, meaning differences within continents have become smaller over time. Similarly, from the regression table in 1923, when Africa was the reference, we see that aside from Europe, the average life expectancy across continents was within one year of each other, and the p-values were not statistically significant. However, in 2023, the regression model shows that life expectancies are more spread out, with differences of around seven or more years between continents. Additionally, p-values are lower, indicating more statistical significance. This suggests that in 2023, the country you live in has a greater statistical effect on life expectancy for three out of the five continents when Africa was the reference, whereas in 1923, only Europe had a significant effect on life expectancy compared to Africa.
