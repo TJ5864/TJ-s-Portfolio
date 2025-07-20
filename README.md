@@ -10,3 +10,5 @@ to add onto this and create a decision tree to  predict fatal car accidents base
 Third Project Game of Life:  This was my final project for my Data mangment class in school. This was a group project where I created the main code 
 for the variations of the game of life 1-3 where I printed out the graphics and created differnt rules for the game of life. The game even allows 
 the user to input there own rules as well. My partner in the project created the tkinter amimation for the game. 
+
+Fourth Project  - This Fantasy Football Draft Assistant was built in Python using CBS Sports PPR-based player projections, which I web scraped and organized into dictionaries before creating a cleaned CSV file. I utilized regular expressions to efficiently search for players and positions, allowing users to draft players for their team or mark players drafted by others. After completing the backend functionality, I developed an interactive front-end with Streamlit, enabling users to view top available players by position and track drafted players in real-time through a simple web app interface.
