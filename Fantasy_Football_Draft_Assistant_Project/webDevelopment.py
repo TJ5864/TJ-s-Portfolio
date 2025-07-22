@@ -27,7 +27,7 @@ st.subheader(f"Top {position}s Available")
 for _, row in top_players.iterrows():
     col1, col2, col3 = st.columns([3, 1, 1])
     col1.markdown(f"**{row['Player']}** — {row['Fantasy Points']} pts")
-    if col2.button("Draft Me", key=f"me_{row['Player']}"):
+    if col2.button("Draft", key=f"me_{row['Player']}"):
         st.session_state.drafted_by_me.append(row['Player'])
     if col3.button("Drafted by Other", key=f"other_{row['Player']}"):
         st.session_state.drafted_by_others.append(row['Player'])
