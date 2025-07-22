@@ -1,6 +1,6 @@
 import pandas as pd 
 import re 
-df = pd.read_csv("https://github.com/TJ5864/TJ-s-Portfolio/blob/main/Fantasy_Football_Draft_Assistant_Project/cleaned_player_projections.csv")
+df = pd.read_csv("https://raw.githubusercontent.com/TJ5864/TJ-s-Portfolio/refs/heads/main/Fantasy_Football_Draft_Assistant_Project/cleaned_player_projections.csv")
 
 drafted_players = []
 
