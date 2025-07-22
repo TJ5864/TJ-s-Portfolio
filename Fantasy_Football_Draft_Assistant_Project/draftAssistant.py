@@ -1,6 +1,6 @@
 import pandas as pd 
 import re 
-df = pd.read_csv("Data/cleaned_player_projections.csv")
+df = pd.read_csv("cleaned_player_projections.csv")
 
 drafted_players = []
 
