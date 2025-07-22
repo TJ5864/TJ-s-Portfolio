@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import re 
 
-df = pd.read_csv("cleaned_player_projections.csv")
+df = pd.read_csv("https://github.com/TJ5864/TJ-s-Portfolio/blob/main/Fantasy_Football_Draft_Assistant_Project/cleaned_player_projections.csv")
 
 
 if "drafted_by_me" not in st.session_state:
