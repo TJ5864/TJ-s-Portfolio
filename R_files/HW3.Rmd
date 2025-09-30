@@ -1,0 +1,70 @@
+---
+title: "Hw3"
+output:
+  pdf_document:
+    latex_engine: xelatex
+  html_document: default
+date: "2025-09-18"
+---
+
+ Consider the house price data in Table B.4.
+a. Fit a multiple regression model relating selling price to all nine
+regressors.
+b. Test for significance of regression. What conclusions can you draw?
+c. Use t tests to assess the contribution of each regressor to the model.
+Discuss your findings.
+d. What is the contribution of lot size and living space to the model given
+that all of the other regressors are included?
+e. Is multicollinearity a potential problem in this model? 
+
+y : Sale price of the house/1000
+x1 : Taxes (local, school, county)/1000
+x2 : Number of baths
+x3 : Lot size (sq ft × 1000)
+x4 : Living space (sq ft × 1000)
+x5 : Number of garage stalls
+x6 : Number of rooms
+x7 : Number of bedrooms
+x8 : Age of the home (years)
+x9 : Number of fi replaces 
+
+```{r}
+library(ggplot2)
+library(moderndive)
+library(dplyr)
+df<- read.csv("B4.csv")
+head(df)
+```
+
+```{r}
+#1 regression using all 9 regressors 
+
+model <- lm(y~x1+x2+x3+x4+x5+x6+x7+x8+x9,data=df)
+get_regression_table(model)
+```
+#2
+From the regression table above. the intercept so when all other values x1-x9 are 0 the selling price or the Y value is estimated to be 14.98. This value for the intercept is statistically significant because the p-value is 0.024 so we can reject the null hypothesis. 
+
+On the other hand for the sake of time instead of analyzing each regression individually from the graph we can see all the other regressors x1-x9 have much lower estimates. They also all have P-values greater than 0.05 so we can not reject the null hypothesis so from the regresson above we can not determine if the regressors are significant or not yet. 
+
+```{r}
+#3
+summary(model)
+```
+Using the summary function we can see the t-values of all the Regressors. When comparing our t-test value to 2 we see all of the t values x1-x9 are less then 2. So we do not have strong evidence that any of them are statistically significant contributers. But we some stil contribute more then others even though evidence is weak. For example x1, x2, and x5 all contribute even though there is weak evidence. there values are much closer to 2 then the rest. Combining this with the fact they all have high p-values and low t values means they may not have any effect on the y intercept.
+
+
+```{r}
+model2 <-lm(y~x1+x2+x5+x6+x7+x8+x9, data=df)
+anova(model2, model)
+
+```
+
+
+4. 
+To test the joint contribution of lot size (x3) and living space (x4), we compared the full model (all nine regressors) to a reduced model excluding x3 and x4. The partial F-test gave F(2,14) = 0.32 with p = 0.73. Since the p-value is much greater than 0.05, we fail to reject the null hypothesis that β₃ = β₄ = 0. This indicates that, after accounting for the other variables, lot size and living space do not significantly improve the fit of the model. 
+
+5. In this housing dataset, multicollinearity is a potential problem because variables such as living space, number of rooms, and number of bedrooms likely overlap in the information they provide. This can inflate standard errors and explain why many t-tests were insignificant despite the model potentially fitting the data reasonably well overall.
+
+But All the Vifs are less than 10 so its not a problem. 
+
